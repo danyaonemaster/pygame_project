@@ -14,7 +14,6 @@ class Player(pygame.sprite.Sprite):
             ) for i in idle_anim
         ]
 
-
         self.run_frames =[
             pygame.transform.scale(
                 pygame.image.load(i).convert_alpha(),
@@ -22,9 +21,15 @@ class Player(pygame.sprite.Sprite):
             ) for i in run_anim
         ]
 
+
         self.flipped_run = [
             pygame.transform.flip(frame, True, False)
             for frame in self.run_frames
+        ]
+
+        self.flipped_idle = [
+            pygame.transform.flip(frame, True, False)
+            for frame in self.idle_frames
         ]
 
         # ---- Анимация ----
@@ -42,6 +47,7 @@ class Player(pygame.sprite.Sprite):
         self.gravity = 0
         self.jumped = False
         self.moves = False
+        self.side = 1
         self.last_move_time = 0
 
         self.move_speed = config.WIDTH * 0.005
@@ -64,16 +70,19 @@ class Player(pygame.sprite.Sprite):
         if keys[pygame.K_d]:
             self.rect.x += self.move_speed
             self.moves = True
+            self.side = 1
             self.animate_run(self.run_frames)
             self.last_move_time = current_time
 
         elif keys[pygame.K_a]:
             self.rect.x -= self.move_speed
             self.moves = True
+            self.side = 0
             self.animate_run(self.flipped_run)
             self.last_move_time = current_time
 
-        elif current_time - self.last_move_time > 200:
+
+        if current_time - self.last_move_time > 200:
             self.moves = False
             self.last_move_time = 0
 
@@ -85,7 +94,11 @@ class Player(pygame.sprite.Sprite):
         if self.frame >= len(self.idle_frames):
             self.frame = 0
 
-        self.image = self.idle_frames[int(self.frame)]
+        if self.side == 1:
+            self.image = self.idle_frames[int(self.frame)]
+        else:
+            self.image = self.flipped_idle[int(self.frame)]
+
         self.mask = pygame.mask.from_surface(self.image)  # если нужна маска
 
     def animate_run(self, run):

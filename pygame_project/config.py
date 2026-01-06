@@ -1,5 +1,5 @@
 # config.py
-import pygame
+from photos.knight.animations import *
 
 # --- Основные настройки ---
 WIDTH = 1280
@@ -39,4 +39,29 @@ SNAIL_MOVE_SPEED = 0.025
 
 PlAYER_JUMP_STRENGTH = 0.032
 SNAIL_JUMP_STRENGTH = 0.1
+
+ANIMATIONS = {
+    1: idle_anim,
+    2: run_anim,
+    3: jump_anim,
+    4: fall_anim,
+    5: atk_idle_and_atk2_anim,
+    6: atk1_anim,
+    7: atk1_anim,
+    8: atk1_anim
+}
+
+## sates describe figure moveset (ie. state)
+STATE_IDLE = 1
+STATE_RUN = 2
+STATE_JUMP = 3
+STATE_FALL = 4
+STATE_ATK2 = 5
+STATE_ATK1 = 6
+STATE_ATK_AIR = 7
+STATE_ATK_RUN = 8
+
+MOVE_DIRECTION_LEFT = 0
+MOVE_DIRECTION_RIGHT = 1
+
 

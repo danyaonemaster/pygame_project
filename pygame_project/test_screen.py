@@ -19,6 +19,3 @@ while True:
     screen.fill((0,0,0))
     sprites.draw(screen)
     pygame.display.flip()
-
-
-pygame.quit()

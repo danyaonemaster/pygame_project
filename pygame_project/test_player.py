@@ -1,6 +1,7 @@
 import pygame
 
-import config as config
+import config
+from assets.hp import Health
 from config import STATE_IDLE, STATE_JUMP, STATE_RUN, STATE_FALL,STATE_ATK2 ,STATE_ATK_AIR ,STATE_ATK_RUN ,STATE_ATK1, MOVE_DIRECTION_RIGHT, MOVE_DIRECTION_LEFT
 
 
@@ -12,7 +13,7 @@ class Player(pygame.sprite.Sprite):
         self.state = STATE_IDLE
         self.animations = {}
 
-        for name, paths in config.ANIMATIONS.items():
+        for name, paths in config.K_ANIMATIONS.items():
             frames = self.load_animation(paths, scale_size)
             self.animations[name] = {
                 MOVE_DIRECTION_RIGHT: frames,
@@ -24,14 +25,15 @@ class Player(pygame.sprite.Sprite):
         self.animation_speed = 0.15
         self.image = self.animations[self.state][MOVE_DIRECTION_RIGHT][self.frame]
 
-        self.original_image = self.image
-        self.flipped_image = pygame.transform.flip(self.image, True, False)
+        self.invulnerable = False
+        self.invuln_time = 1000
 
         # ---- Физика ----
         self.rect = self.image.get_rect(midbottom=xy_pairs)
         self.mask = pygame.mask.from_surface(self.image)
 
         self.bottom = self.rect.bottom
+        self.health = Health(20)
         self.gravity = 0
         self.attack_stage = 0
         self.combo_queued = False
@@ -59,7 +61,7 @@ class Player(pygame.sprite.Sprite):
             self.state = new_state
             self.frame = 0
 
-    # ---------- Гравитация ----------
+    # ---------- Gravity ----------
     def apply_gravity(self):
         self.gravity += self.gravity_speed
         self.rect.bottom += self.gravity
@@ -186,6 +188,19 @@ class Player(pygame.sprite.Sprite):
 
         self.mask = pygame.mask.from_surface(self.image)
 
+    def take_damage(self, amount, current_time, pos):
+        if self.invulnerable:
+            return False
+
+        self.health.damage(amount, current_time)
+        self.invulnerable = True
+
+        if self.health.is_dead():
+            self.die(pos)
+            return True
+
+        return False
+
     # ---------- Update ----------
     def update(self, event_list, current_time):
         self.apply_gravity()
@@ -196,17 +211,40 @@ class Player(pygame.sprite.Sprite):
                 if event.key == pygame.K_x:
                     self.handle_attack_input()
 
+        if self.invulnerable:
+            if current_time - self.health.last_hit >= self.invuln_time:
+                self.invulnerable = False
+
         if self.attacking:
             self.animate_attack()
             return
+
 
         if not self.moves and not self.jumped and not self.attacking:
                 self.set_state(STATE_IDLE)
                 self.animate(self.animations[self.state], 0.1)
 
 
-    # ---------- Reset ----------
-    def reset_game(self, pos):
+
+    def die(self, pos):
+        self.reset(pos)
+        config.GAME_ACTIVE = False
+
+
+    def reset(self, pos):
         self.rect.midbottom = pos
         self.gravity = 0
+
+        self.health.hp = self.health.max_hp
+        self.invulnerable = False
+        self.invuln_time = 1000
+
+        self.state = STATE_IDLE
+        self.frame = 0
+
+        self.attack_stage = 0
+        self.combo_queued = False
+        self.attacking = False
+
+        self.moves = False
         self.jumped = False

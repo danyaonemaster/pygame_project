@@ -5,13 +5,7 @@ import random
 
 class Slime(Enemy):
     def __init__(self, pos, size):
-        super().__init__("photos/slime.png", pos, size)
-
-        # оригинал
-        self.original_image = self.image
-
-        # переворачиваем по горизонтали
-        self.flipped_image = pygame.transform.flip(self.image, True, False)
+        super().__init__(pos, size, config.S_ANIMATIONS)
 
         self.jump_strength = -12
         self.jump_cooldown = 0
@@ -24,12 +18,12 @@ class Slime(Enemy):
         if random_num == 0:
             self.start_pos = [config.WIDTH * 0.065, self.start_pos[1]]
             self.move_speed = config.HEIGHT * 0.006
-            self.image = self.original_image
+            self.side = config.MOVE_DIRECTION_LEFT
 
         elif random_num == 1:
             self.start_pos = [config.WIDTH * 0.935, self.start_pos[1]]
             self.move_speed = -config.HEIGHT * 0.006
-            self.image = self.flipped_image
+            self.side = config.MOVE_DIRECTION_RIGHT
 
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -45,8 +39,12 @@ class Slime(Enemy):
 
         if not self.is_jumping and self.jump_cooldown <= current_time:
             self.gravity = self.jump_strength
+            self.set_state(config.STATE_JUMP)
             self.jump_cooldown = current_time + random.randint(1000, 2000)
             self.is_jumping = True
+
+        if not self.is_jumping and self.jump_cooldown >= current_time:
+            self.set_state(config.STATE_IDLE)
 
         if self.is_jumping:
             self.rect.left += self.move_speed
@@ -57,8 +55,16 @@ class Slime(Enemy):
     def restart(self):
         self.rect.midbottom = self.start_pos
         self.is_jumping = False
+        self.state = config.STATE_IDLE
         self.gravity = 0
         self.jump_cooldown = 0
+
+    def update(self, current_time):
+        self.behavior(current_time)
+        self.animate(self.animations[self.state])
+
+
+
 
 
 

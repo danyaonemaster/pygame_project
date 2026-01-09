@@ -36,3 +36,8 @@ atk1_anim = [
     os.path.join(BASE_PATH, "knight_atk1", f"atk1_{i}.png")
     for i in range(4)
 ]
+
+death_anim = [
+    os.path.join(BASE_PATH, "knight_atk1", f"atk1_{i}.png")
+    for i in range(4)
+]

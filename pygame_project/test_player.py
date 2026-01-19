@@ -28,7 +28,6 @@ class Player(pygame.sprite.Sprite):
         self.invulnerable = False
         self.invuln_time = 1000
 
-        # ---- Физика ----
         self.rect = self.image.get_rect(midbottom=xy_pairs)
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -61,15 +60,25 @@ class Player(pygame.sprite.Sprite):
             self.state = new_state
             self.frame = 0
 
-    # ---------- Gravity ----------
-    def apply_gravity(self):
+    def apply_gravity(self, tiles):
         self.gravity += self.gravity_speed
-        self.rect.bottom += self.gravity
+        if self.gravity > 20:
+            self.gravity = 20
 
-        if self.rect.bottom >= self.bottom:
-            self.rect.bottom = self.bottom
-            self.gravity = 0
-            self.jumped = False
+        self.rect.y += self.gravity
+        self.jumped = True
+
+        for tile in tiles:
+            if self.rect.colliderect(tile.rect):
+
+                if self.gravity > 0:
+                    self.rect.bottom = tile.rect.top
+                    self.gravity = 0
+                    self.jumped = False
+
+                elif self.gravity < 0:
+                    self.rect.top = tile.rect.bottom
+                    self.gravity = 0
 
     def handle_input(self, current_time):
         keys = pygame.key.get_pressed()
@@ -202,9 +211,9 @@ class Player(pygame.sprite.Sprite):
         return False
 
     # ---------- Update ----------
-    def update(self, event_list, current_time):
-        self.apply_gravity()
+    def update(self, event_list, current_time, target_tile):
         self.handle_input(current_time)
+        self.apply_gravity(target_tile)
 
         for event in event_list:
             if event.type == pygame.KEYDOWN:

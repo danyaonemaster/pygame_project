@@ -2,15 +2,15 @@ import pygame
 from pygame.sprite import Sprite
 
 
-class GameSprite(Sprite):
-    def __init__(self, position=(0, 0), scale=None, image_folder=None, is_parallax=False):
+class Image(Sprite):
+    def __init__(self, position=(0, 0), scale=None, image_folder=None, is_parallax=False, ):
         super().__init__()
 
         self.position = position
         self.scale = scale
         self.is_parallax = is_parallax
 
-        self.layers = []   # [(image, speed)]
+        self.layers = []  # [(image, speed)]
         self.scroll = 0
 
         if is_parallax and image_folder:
@@ -22,14 +22,12 @@ class GameSprite(Sprite):
 
             self.width = self.layers[0][0].get_width()
 
-    # ===== ДВИЖЕНИЕ ФОНА =====
     def move(self, direction):
         if direction[pygame.K_d]:
             self.scroll += 3
         if direction[pygame.K_a]:
             self.scroll -= 3
 
-    # ===== ОТРИСОВКА =====
     def draw(self, surface):
         if not self.is_parallax:
             return
@@ -37,4 +35,5 @@ class GameSprite(Sprite):
         for img, speed in self.layers:
             x = -self.scroll * speed
             for i in range(10):
-                surface.blit(img, (x + i * self.width, 0))
+                surface.blit(img, (x + i * self.width, self.position[1]))
+

@@ -1,44 +1,54 @@
+import sys
+
 import pygame
+
+from assets.image import Image
+from config import *
 from photos.loader import *
-from assets.image import GameSprite
-from test_player import Player
-import config
-import utils
-from utils import scale_pos, scale_size
-
-pygame.init()
-
-screen = pygame.display.set_mode((1200, 720))
-pygame.display.set_caption("Mario (D&D)")
-clock = pygame.time.Clock()
-screen_size = screen.get_size()
-
-player = Player(scale_pos(config.PLAYER_POS), scale_size(config.PLAYER_SIZE))  # например
-sprites = pygame.sprite.Group(player)
-
-background = GameSprite(scale=utils.scale_size(config.BACKGROUND_SIZE), image_folder= background_images, is_parallax=True)
-
-running = True
-while running:
-    dt = clock.tick(60)
-    events = pygame.event.get()
-    current_time = pygame.time.get_ticks()
-
-    for event in events:
-        if event.type == pygame.QUIT:
-            running = False
-
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                running = False
+from assets.tilemap import TileMap
+from test_player import *
+from utils import *
 
 
-    background.move(pygame.key.get_pressed())
-    background.draw(screen)
+class Game:
+    def __init__(self):
+        pygame.init()
 
-    sprites.update(events, current_time)
-    sprites.draw(screen)
+        pygame.display.set_caption("Mario D&D")
+        self.screen = pygame.display.set_mode((1200, 720))
 
-    pygame.display.flip()
+        self.clock = pygame.time.Clock()
 
-pygame.quit()
+        self.background = Image(is_parallax=True, scale=scale_size(BACKGROUND_SIZE), image_folder=background_images)
+        self.player = Player(PLAYER_POS, PLAYER_SIZE)
+        self.player_group = pygame.sprite.Group(self.player)
+
+        self.tilemap = TileMap("level/test_world.tmx")
+
+    def run(self):
+
+        while True:
+            events = pygame.event.get()
+            keys = pygame.key.get_pressed()
+            current_time = pygame.time.get_ticks()
+            current_time = current_time // 1000
+
+            self.background.move(keys)
+            self.background.draw(self.screen)
+
+            self.tilemap.tilemap.draw(self.screen)
+            self.tilemap.offgrid_tiles.draw(self.screen)
+
+            self.player.update(events, current_time, self.tilemap.tilemap)
+            self.player_group.draw(self.screen)
+
+            for event in events:
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+
+            pygame.display.update()
+            self.clock.tick(60)
+
+
+Game().run()

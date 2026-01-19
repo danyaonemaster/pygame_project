@@ -1,6 +1,8 @@
 # config.py
+
 import photos.knight.animations as knight
 import photos.slime.animations as slime
+from scripts.utils import load_image
 
 WIDTH = 1280
 HEIGHT = 720
@@ -9,24 +11,28 @@ GAME_ACTIVE = False
 FPS = 60
 animation_fps = 6
 
+TILE_SIZE = 32
+
 START_TIME = 0
 CURRENT_TIME = 0
 LAST_TIME = 0
 
-PLAYER_POS = (0.25, 0.79)
+PLAYER_POS = (0.25, 0.2)
 SLIME_POS = (0.0625, 0.8125)
 SUN_POS = (0.85, 0.075)
 SCORE_POS = (0.075, 0.0375)
 FINAL_SCORE_POS = (0.5, 0.6)
 GAME_NAME_POS = (0.5, 0.25)
 BUTTON_POS = (0.5, 0.75)
+GRASS_BACKGROUND_POS = (0, 0.3)
 
 SLIME_SIZE = (0.200, 0.200)
 SUN_SIZE = (0.125, 0.25)
 PLAYER_SIZE = (0.33, 0.3)
-BACKGROUND_SIZE = (0.6, 0.9)
+BACKGROUND_SIZE = (1.1, 1)
+GRASS_BACKGROUND_SIZE = (0.7, 1)
 
-# --- Цвета ---
+
 BG_COLOR = "black"
 TEXT_COLOR = "darkgreen"
 
@@ -38,6 +44,7 @@ SNAIL_MOVE_SPEED = 0.025
 
 PlAYER_JUMP_STRENGTH = 0.032
 SNAIL_JUMP_STRENGTH = 0.1
+
 
 STATE_IDLE = 1
 STATE_RUN = 2
@@ -66,9 +73,9 @@ K_ANIMATIONS = {
     STATE_DEATH: knight.death_anim
 }
 
-## sates describe figure moveset (ie. state)
 
 MOVE_DIRECTION_LEFT = 0
 MOVE_DIRECTION_RIGHT = 1
 
 
+LEVEL_PATH = "../level/"

@@ -13,13 +13,6 @@ pygame.display.set_caption("Mario (D&D)")
 pygame.display.set_icon(pygame.image.load('photos/icon.png'))
 clock = pygame.time.Clock()
 
-# --- Assets ---
-sky = GameSprite("photos/sky.png", 0, 0, config.WIDTH, config.HEIGHT)
-floor = GameSprite("photos/grass.png", 0, config.HEIGHT * 0.75, config.WIDTH, config.HEIGHT * 0.25)
-sun = GameSprite("photos/sun.png", *scale_pos(config.SUN_POS), *scale_size(config.SUN_SIZE))
-background_group = pygame.sprite.Group(sky, floor, sun)
-
-
 slime = Slime(config.SLIME_POS, config.SLIME_SIZE)
 enemy_group = pygame.sprite.Group(slime)
 
@@ -78,8 +71,6 @@ while running:
 
     # --- Game Active ---
     if config.GAME_ACTIVE and not game_start:
-        sun.rotate(1)
-        background_group.draw(screen)
 
         # --- Score ---
         current_time = (pygame.time.get_ticks() - config.START_TIME)

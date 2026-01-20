@@ -20,11 +20,20 @@ class TileMap(pygame.sprite.Sprite):
 
             if layer.name == "platforms":
                 for x, y, surface in layer.tiles():
+                    if surface.get_bounding_rect().width == 0:
+                        continue
+
                     Tileset((x * TILE_SIZE, y * TILE_SIZE), surface, self.tilemap)
 
             else:
                 for x, y, surface in layer.tiles():
+                    if surface.get_bounding_rect().width == 0:
+                        continue
+
                     Tileset((x * TILE_SIZE, y * TILE_SIZE), surface, self.offgrid_tiles)
+
+
+
 
 
 
